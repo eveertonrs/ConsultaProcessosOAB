@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Aplicativo Flask</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    
+</head>
+
+<body>
+    <header>
+        <h1>Bem-vindo ao Meu Aplicativo Flask</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/">Página Inicial</a></li>
+            <li><a href="/sobre">Sobre</a></li>
+            <li><a href="/contato">Contato</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h2>Conteúdo da Página Inicial</h2>
+        <p>Este é um exemplo de página web para o seu aplicativo Flask.</p>
+    </main>
+    <footer>
+        <p>&copy; 2023 Meu Aplicativo Flask</p>
+    </footer>
+</body>
+</html>
