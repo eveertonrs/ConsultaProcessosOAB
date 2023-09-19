@@ -8,7 +8,13 @@
 </head>
 <body>
     <div class="login-container">
-        <h2>Login</h2>
+        <h2>LOGIN</h2>  
+        {% set mensagens = get_flashed_messages()%}
+        {% if mensagens %}
+            <div id="aleta">
+                {{mensagens[0]}}
+            </div>
+        {% endif %}
         <form id="login-form" method="POST" action="/login">
             <div class="form-group">
                 <label for="username">Usuário:</label>
@@ -18,12 +24,8 @@
                 <label for="password">Senha:</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            {% if error_message %}
-            <div class="error-message">{{ error_message }}</div>
-            {% endif %}
             <button type="submit">Entrar</button>
         </form>
     </div>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
