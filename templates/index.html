@@ -10,6 +10,18 @@
     <div class="welcome-container">
         <h2>Bem-vindo! {{ nomeUsuario }}</h2>
         <p>Você está logado com sucesso.</p>
+        <h3>Informações dos Processos:</h3>
+        <ul>
+            {% for processo in informacoes_processos %}
+            <li>
+                <p>Número do Processo: {{ processo['numero_processo'] }}</p>
+                <p>Advogado(a): {{ processo['advogado'] }}</p>
+                <p>Classe do Processo: {{ processo['classe_processo'] }}</p>
+                <p>Assunto Principal: {{ processo['assunto_principal'] }}</p>
+                <p>Recebido em: {{ processo['recebido_em'] }}</p>
+            </li>
+            {% endfor %}
+        </ul>
         <a href="/logout">Sair</a>
     </div>
 </body>
