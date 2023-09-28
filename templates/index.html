@@ -11,17 +11,35 @@
         <h2>Bem-vindo! {{ nomeUsuario }}</h2>
         <p>Você está logado com sucesso.</p>
         <h3>Informações dos Processos:</h3>
-        <ul>
-            {% for processo in informacoes_processos %}
-            <li>
-                <p>Número do Processo: {{ processo['numero_processo'] }}</p>
-                <p>Advogado(a): {{ processo['advogado'] }}</p>
-                <p>Classe do Processo: {{ processo['classe_processo'] }}</p>
-                <p>Assunto Principal: {{ processo['assunto_principal'] }}</p>
-                <p>Recebido em: {{ processo['recebido_em'] }}</p>
-            </li>
+        <table class = "tabela">
+            <tr>
+                <th>Número do Processo:</th>
+                <th>Classe do Processo:</th>
+                <th>Assunto Principal:</th>
+                <th>Foro do Processo:</th>
+                <th>Vara do Processo:</th>
+                <th>Juiz do Processo:</th>
+                <th>Movimentações:</th>
+                </tr>
+            {% for processo in scraped_data %}
+            <tr>
+                <td class="processo">{{ processo['numero_processo'] }}</td>
+                <td class="processo">{{ processo['classe_processo'] }}</td>
+                <td class="processo">{{ processo['assunto_processo'] }}</td>
+                <td class="processo">{{ processo['foro_processo'] }}</td>
+                <td class="processo">{{ processo['vara_processo'] }}</td>
+                <td class="processo">{{ processo['juiz_processo'] }}</td>
+                    <td>
+                        <div class="movimentacoes-list">
+                            {% for movimento in processo['movimentacoes'] %}
+                                <li>{{ movimento['data_movimentacao'] }}</li>
+                                <li>{{ movimento['descricao_movimentacao'] }}</li>
+                            {% endfor %}
+                        </div>
+                    </td>
+            </tr>
             {% endfor %}
-        </ul>
+        </table>
         <a href="/logout">Sair</a>
     </div>
 </body>

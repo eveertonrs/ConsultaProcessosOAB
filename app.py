@@ -15,29 +15,15 @@ import threading
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "palavra-secreta123"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mssql+pyodbc:///?odbc_connect=DRIVER={ODBC Driver 17 for SQL Server};SERVER=localhost;DATABASE=DB_ConsultaOAB;UID=master;PWD=##'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mssql+pyodbc:///?odbc_connect=DRIVER={ODBC Driver 17 for SQL Server};SERVER=localhost;DATABASE=DB_ConsultaOAB;UID=master;PWD=****'
 db = SQLAlchemy(app)
+
+listainf = []
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False) 
 
-scraping_lock = threading.Lock()
-
-@app.route("/scraped_data")
-def get_scraped_data():
-    global scraping_lock
-    
-    # Verifique se o scraping está em andamento em outra thread
-    if scraping_lock.locked():
-        flash('O scraping já está em andamento. Aguarde a conclusão.')
-        return redirect("/")
-    
-    # Inicie o scraping em uma thread separada
-    scraping_thread = threading.Thread(target=scrape_data)
-    scraping_thread.start()
-    
-    return redirect("/")
 
 def scrape_data():
    # Configurar o serviço do Chrome para rodar em segundo plano
@@ -77,6 +63,7 @@ def scrape_data():
     elementos_processo = div_processos.find_elements(By.TAG_NAME, 'li')
     # Crie uma lista vazia para armazenar os links dos processos
     links_processos = []
+    
 
     # Itere sobre os elementos de processo e extraia os links
     for elemento in elementos_processo:
@@ -110,47 +97,38 @@ def scrape_data():
 
         # Defina o número de primeiras movimentações que você deseja coletar
         numero_de_movimentacoes = 5  # Altere para o número desejado
+        
+        movimentacoes = []
 
         # Itere sobre as primeiras movimentações
         for elemento in elementos_movimentacao[:numero_de_movimentacoes]:
             # Encontre os elementos dentro de <tr> que contêm as informações
             data_movimentacao = elemento.find_element(By.CLASS_NAME, 'dataMovimentacao').text
             descricao_movimentacao = elemento.find_element(By.CLASS_NAME, 'descricaoMovimentacao').text
+            
+            movimentacoes.append({
+            "data_movimentacao": data_movimentacao,
+            "descricao_movimentacao": descricao_movimentacao
+            })
 
             # Imprima as informações da movimentação
             print(f'Data de Movimentação: {data_movimentacao}\n')
             print(f'Descrição da Movimentação: {descricao_movimentacao}\n')
+            
+        listainf.append({
+            "numero_processo": numero_processo,
+            "classe_processo": classe_processo,
+            "assunto_processo": assunto_processo,
+            "foro_processo": foro_processo,
+            "vara_processo": vara_processo,
+            "juiz_processo": juiz_processo,
+            "movimentacoes": movimentacoes
+        })
 
         driver.back()
         
-    # Store the scraped information in a data structure
-    scraped_data = {
-        "numero_processo": numero_processo,
-        "classe_processo": classe_processo,
-        "assunto_processo": assunto_processo,
-        "foro_processo": foro_processo,
-        "vara_processo": vara_processo,
-        "juiz_processo": juiz_processo,
-        "movimentacoes": []
-    }
-    
-    # Iterate over the first few movements and store them in the scraped_data dictionary
-    for elemento in elementos_movimentacao[:numero_de_movimentacoes]:
-        data_movimentacao = elemento.find_element(By.CLASS_NAME, 'dataMovimentacao').text
-        descricao_movimentacao = elemento.find_element(By.CLASS_NAME, 'descricaoMovimentacao').text
-        scraped_data["movimentacoes"].append({
-            "data_movimentacao": data_movimentacao,
-            "descricao_movimentacao": descricao_movimentacao
-        })
-        
-    scraped_data = {
-        # Coloque os dados coletados aqui...
-    }
-    
-    session['scraped_data'] = scraped_data
-
-    # Libere a variável de bloqueio
-    scraping_lock.release()
+           
+    print(listainf)
 
     # Encerre o driver do Chrome
     driver.quit()
@@ -158,9 +136,8 @@ def scrape_data():
 
 @app.route("/")
 def home():
-    if 'scraped_data' in session:
-        scraped_data = session['scraped_data']
-        return render_template('/index.html', nomeUsuario=session['username'], scraped_data=scraped_data)
+    if listainf:
+        return render_template('/index.html', nomeUsuario=session['username'], scraped_data=listainf)
     else:
         return render_template('/login.html')
 
@@ -174,10 +151,7 @@ def login():
     if user and user.password == senha:
         # Store the username in the session variable
         session['username'] = user.username
-        
-        # Start the scraping process in the background using a separate thread
-        scraping_thread = Thread(target=get_scraped_data)
-        scraping_thread.start()
+        scrape_data()
         
         return redirect("/")
     else:

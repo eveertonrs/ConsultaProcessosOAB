@@ -6,7 +6,7 @@ body {
 }
 
 .welcome-container {
-    width: 300px;
+    width: 80%;
     margin: 0 auto;
     padding: 20px;
     background-color: #fff;
@@ -34,4 +34,34 @@ a {
 
 a:hover {
     text-decoration: underline;
+}
+
+td.processo {
+    vertical-align: top;
+}
+
+
+/* Estilo para a lista de movimentações */
+
+.movimentacoes-list {
+    max-height: 50px;
+    /* Altura máxima desejada */
+    overflow-y: scroll;
+    /* Adiciona a barra de rolagem vertical quando necessário */
+    border: 1px solid #ccc;
+    /* Adicione uma borda para separar visualmente a lista */
+    padding: 10px;
+    /* Espaçamento interno opcional */
+}
+
+
+/* Estilo para cada item da lista de movimentações */
+
+.movimentacoes-list li {
+    margin-bottom: 10px;
+    /* Espaçamento entre os itens da lista */
+}
+
+table.tabela {
+    max-height: 300px;
 }
